@@ -275,7 +275,7 @@ async def generate(request: Request):
 
 
 @app.post("/send")
-async def send(request: Request):
+async def generate(request: Request):
     logger.info("Worker send...")
     params = await request.json()
     uid = uuid.uuid4()
@@ -301,9 +301,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", type=str, default="0.0.0.0")
     parser.add_argument("--port", type=int, default=8081)
-    parser.add_argument("--model_path", type=str, default='tencent/Hunyuan3D-2mini')
-    parser.add_argument("--subfolder", type=str, default='hunyuan3d-dit-v2-mini-turbo')
-    parser.add_argument("--tex_model_path", type=str, default='tencent/Hunyuan3D-2')
+    parser.add_argument("--model_path", type=str, default='/data/weiwei/projects/3D_gen/Hunyuan3D-2-FastAPI/models/Hunyuan3D-2mini')
+    parser.add_argument("--tex_model_path", type=str, default='/data/weiwei/projects/3D_gen/Hunyuan3D-2-FastAPI/models/Hunyuan3D-2')
     parser.add_argument("--device", type=str, default="cuda")
     parser.add_argument("--limit-model-concurrency", type=int, default=5)
     parser.add_argument('--enable_tex', action='store_true')
@@ -312,6 +311,6 @@ if __name__ == "__main__":
 
     model_semaphore = asyncio.Semaphore(args.limit_model_concurrency)
 
-    worker = ModelWorker(model_path=args.model_path, subfolder=args.subfolder, device=args.device, 
-                         enable_tex=args.enable_tex, tex_model_path=args.tex_model_path)
+    worker = ModelWorker(model_path=args.model_path, device=args.device, enable_tex=args.enable_tex,
+                         tex_model_path=args.tex_model_path)
     uvicorn.run(app, host=args.host, port=args.port, log_level="info")
